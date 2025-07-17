@@ -147,7 +147,7 @@ define("UsrRealty_FormPage", /**SCHEMA_DEPS*/[]/**SCHEMA_DEPS*/, function/**SCHE
 					"label": "$Resources.Strings.PDS_UsrCommission_leefrcv",
 					"labelPosition": "auto",
 					"control": "$PDS_UsrCommission_leefrcv",
-					"visible": true,
+					"visible": false,
 					"readonly": true,
 					"placeholder": "",
 					"tooltip": ""
@@ -300,6 +300,28 @@ define("UsrRealty_FormPage", /**SCHEMA_DEPS*/[]/**SCHEMA_DEPS*/, function/**SCHE
 				"parentName": "GeneralInfoTabContainer",
 				"propertyName": "items",
 				"index": 4
+			},
+			{
+				"operation": "insert",
+				"name": "CommissionPercent",
+				"values": {
+					"layoutConfig": {
+						"column": 2,
+						"colSpan": 1,
+						"row": 4,
+						"rowSpan": 1
+					},
+					"type": "crt.NumberInput",
+					"label": "$Resources.Strings.PDS_UsrOfferTypeUsrCommisionPercent_0fq1dsd",
+					"control": "$PDS_UsrOfferTypeUsrCommisionPercent_0fq1dsd",
+					"readonly": true,
+					"placeholder": "",
+					"labelPosition": "auto",
+					"tooltip": ""
+				},
+				"parentName": "GeneralInfoTabContainer",
+				"propertyName": "items",
+				"index": 5
 			}
 		]/**SCHEMA_VIEW_CONFIG_DIFF*/,
 		viewModelConfigDiff: /**SCHEMA_VIEW_MODEL_CONFIG_DIFF*/[
@@ -353,6 +375,11 @@ define("UsrRealty_FormPage", /**SCHEMA_DEPS*/[]/**SCHEMA_DEPS*/, function/**SCHE
 						"modelConfig": {
 							"path": "PDS.UsrCommission"
 						}
+					},
+					"PDS_UsrOfferTypeUsrCommisionPercent_0fq1dsd": {
+						"modelConfig": {
+							"path": "PDS.UsrOfferTypeUsrCommisionPercent_0fq1dsd"
+						}
 					}
 				}
 			},
@@ -385,7 +412,13 @@ define("UsrRealty_FormPage", /**SCHEMA_DEPS*/[]/**SCHEMA_DEPS*/, function/**SCHE
 					"PDS": {
 						"type": "crt.EntityDataSource",
 						"config": {
-							"entitySchemaName": "UsrRealty"
+							"entitySchemaName": "UsrRealty",
+							"attributes": {
+								"UsrOfferTypeUsrCommisionPercent_0fq1dsd": {
+									"path": "UsrOfferType.UsrCommisionPercent",
+									"type": "ForwardReference"
+								}
+							}
 						},
 						"scope": "page"
 					}
@@ -410,6 +443,35 @@ define("UsrRealty_FormPage", /**SCHEMA_DEPS*/[]/**SCHEMA_DEPS*/, function/**SCHE
 					console.log("Price = " + price);
 
 					request.$context.PDS_UsrArea_glmjgg6 = price * 0.2;
+
+					/* Call the next handler if it exists and return its result. */
+
+					return next?.handle(request);
+
+				}
+
+			},
+			{
+
+				request: "crt.HandleViewModelAttributeChangeRequest",
+
+				/* The custom implementation of the system query handler. */
+
+				handler: async (request, next) => {
+
+      					if (request.attributeName === 'PDS_UsrPrice_azh8oia' || 				             // if price changed
+
+					   request.attributeName === 'PDS_UsrOfferTypeUsrCommissionPercent' ) { 		// or percent changed
+
+						var price = await request.$context.PDS_UsrPrice_azh8oia;
+
+						var percent = await request.$context.PDS_UsrOfferTypeUsrCommissionPercent;
+
+						var commission = price * percent / 100;
+
+						request.$context.PDS_UsrCommission_leefrcv = commission;
+
+					}
 
 					/* Call the next handler if it exists and return its result. */
 

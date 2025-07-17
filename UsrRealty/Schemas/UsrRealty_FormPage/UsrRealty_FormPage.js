@@ -53,6 +53,30 @@ define("UsrRealty_FormPage", /**SCHEMA_DEPS*/[]/**SCHEMA_DEPS*/, function/**SCHE
 			},
 			{
 				"operation": "insert",
+				"name": "PushmeButton",
+				"values": {
+					"type": "crt.Button",
+					"caption": "#ResourceString(PushmeButton_caption)#",
+					"color": "accent",
+					"disabled": false,
+					"size": "medium",
+					"iconPosition": "left-icon",
+					"visible": true,
+					"clicked": {
+						"request": "usr.PushButtonRequest",
+						"params": {
+							"showSuccessMessage": true
+						}
+					},
+					"clickMode": "default",
+					"icon": "send-test-email-icon"
+				},
+				"parentName": "CardToggleContainer",
+				"propertyName": "items",
+				"index": 0
+			},
+			{
+				"operation": "insert",
 				"name": "UsrName",
 				"values": {
 					"layoutConfig": {
@@ -108,6 +132,29 @@ define("UsrRealty_FormPage", /**SCHEMA_DEPS*/[]/**SCHEMA_DEPS*/, function/**SCHE
 				"parentName": "SideAreaProfileContainer",
 				"propertyName": "items",
 				"index": 2
+			},
+			{
+				"operation": "insert",
+				"name": "Commission",
+				"values": {
+					"layoutConfig": {
+						"column": 1,
+						"colSpan": 1,
+						"row": 4,
+						"rowSpan": 1
+					},
+					"type": "crt.NumberInput",
+					"label": "$Resources.Strings.PDS_UsrCommission_leefrcv",
+					"labelPosition": "auto",
+					"control": "$PDS_UsrCommission_leefrcv",
+					"visible": true,
+					"readonly": true,
+					"placeholder": "",
+					"tooltip": ""
+				},
+				"parentName": "SideAreaProfileContainer",
+				"propertyName": "items",
+				"index": 3
 			},
 			{
 				"operation": "insert",
@@ -194,7 +241,11 @@ define("UsrRealty_FormPage", /**SCHEMA_DEPS*/[]/**SCHEMA_DEPS*/, function/**SCHE
 					"label": "$Resources.Strings.PDS_UsrComment_p4bdg86",
 					"labelPosition": "auto",
 					"control": "$PDS_UsrComment_p4bdg86",
-					"multiline": false
+					"multiline": false,
+					"visible": false,
+					"readonly": false,
+					"placeholder": "",
+					"tooltip": ""
 				},
 				"parentName": "GeneralInfoTabContainer",
 				"propertyName": "items",
@@ -297,6 +348,11 @@ define("UsrRealty_FormPage", /**SCHEMA_DEPS*/[]/**SCHEMA_DEPS*/, function/**SCHE
 						"modelConfig": {
 							"path": "PDS.UsrNumber"
 						}
+					},
+					"PDS_UsrCommission_leefrcv": {
+						"modelConfig": {
+							"path": "PDS.UsrCommission"
+						}
 					}
 				}
 			},
@@ -336,7 +392,33 @@ define("UsrRealty_FormPage", /**SCHEMA_DEPS*/[]/**SCHEMA_DEPS*/, function/**SCHE
 				}
 			}
 		]/**SCHEMA_MODEL_CONFIG_DIFF*/,
-		handlers: /**SCHEMA_HANDLERS*/[]/**SCHEMA_HANDLERS*/,
+		handlers: /**SCHEMA_HANDLERS*/[
+			{
+
+				request: "usr.PushButtonRequest",
+
+				/* Implementation of the custom query handler. */
+
+				handler: async (request, next) => {
+
+					console.log("Button works...");
+
+					Terrasoft.showInformation("My button was pressed.");
+
+					var price = await request.$context.PDS_UsrPrice_azh8oia;
+
+					console.log("Price = " + price);
+
+					request.$context.PDS_UsrArea_glmjgg6 = price * 0.2;
+
+					/* Call the next handler if it exists and return its result. */
+
+					return next?.handle(request);
+
+				}
+
+			}
+		]/**SCHEMA_HANDLERS*/,
 		converters: /**SCHEMA_CONVERTERS*/{}/**SCHEMA_CONVERTERS*/,
 		validators: /**SCHEMA_VALIDATORS*/{}/**SCHEMA_VALIDATORS*/
 	};
